@@ -17,8 +17,10 @@ public class WelcomeScreen extends Application {
         //Parent root = FXMLLoader.load(getClass().getResource("/welcomepage.fxml"));
         Parent root = fxmlLoader.load();
     stage.setTitle("Welcome");
-    stage.setScene(new Scene(root));
-    stage.show();
+    stage.setScene(new Scene(root,1280, 720));
+    stage.getScene().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        stage.show();
     }
 
     public static void main(String[] args) {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          xmlns="http://javafx.com/javafx/17.0.12"
+          fx:controller="com.focusmonitor.client.clientdesktop.WelcomeController"
+          hgap="10" vgap="10" style="-fx-padding: 20; -fx-background-color: #f9f9f9;">
+
+    <columnConstraints>
+        <ColumnConstraints percentWidth="70"/>
+        <ColumnConstraints percentWidth="30"/>
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints prefHeight="100"/> <!-- Top bar -->
+        <RowConstraints vgrow="ALWAYS"/>   <!-- Main content -->
+    </rowConstraints>
+
+    <!-- Top bar -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: #2c3e50; -fx-padding: 10;"
+          GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+        <Label text="Welcome" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+    </HBox>
+
+    <!-- Left main content -->
+    <VBox spacing="20" alignment="CENTER"
+          style="-fx-background-color: #ecf0f1; -fx-padding: 20;"
+          GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <ImageView fx:id="logoImage" preserveRatio="true" fitWidth="200"/>
+        <Label text="Welcome to Focus Monitor" style="-fx-font-size: 18px;"/>
+    </VBox>
+
+    <!-- Right top panel -->
+    <VBox alignment="CENTER" spacing="10"
+          style="-fx-background-color: #bdc3c7; -fx-padding: 10;"
+          GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Label text="Right Top Panel" style="-fx-font-weight: bold;"/>
+    </VBox>
+
+    <!-- Right bottom panel -->
+    <VBox alignment="CENTER" spacing="15"
+          style="-fx-background-color: #95a5a6; -fx-padding: 20;"
+          GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="rightBottomPanel">
+        <Label text="Right Bottom Panel" style="-fx-font-size: 16px;"/>
+        <Label text="Main Content" />
+        <Button text="Sign In" prefWidth="200" onAction="#handleSignIn"/>
+        <Button text="Sign Up" prefWidth="200" onAction="#handleSignUp"/>
+    </VBox>
+
+    <VBox alignment="CENTER" spacing="10"
+          style="-fx-background-color: #95a5a6; -fx-padding: 20;"
+          GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false"  fx:id="signInForm">
+        <Label text="Sign In Form" style="-fx-font-size: 16px;"/>
+        <TextField promptText="Username" prefWidth="200"/>
+        <PasswordField promptText="Password" prefWidth="200"/>
+        <Button text="Submit" prefWidth="200" onAction="#submitSignIn"/>
+        <Button text="Back" prefWidth="200" onAction="#backToMainPanel"/>
+    </VBox>
+
+    <VBox alignment="CENTER" spacing="10"
+          style="-fx-background-color: #95a5a6; -fx-padding: 20;"
+          GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false"  fx:id="signUpForm">
+        <Label text="Sign Up Form" style="-fx-font-size: 16px;"/>
+        <TextField promptText="Username" prefWidth="200"/>
+        <TextField promptText="Email" prefWidth="200"/>
+        <PasswordField promptText="Password" prefWidth="200"/>
+        <PasswordField promptText="Confirm Password" prefWidth="200"/>
+        <Button text="Register" prefWidth="200" onAction="#submitSignUp"/>
+        <Button text="Back" prefWidth="200" onAction="#backToMainPanel"/>
+    </VBox>
+
+</GridPane>
