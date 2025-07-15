@@ -37,3 +37,4 @@ build/
 # Spring Boot config – chráni citlivé konfiguračné súbory
 application.yml
 application.properties
+yml/
