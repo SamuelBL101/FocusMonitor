@@ -1,36 +1,83 @@
-
+/* Base app */
 .root {
     -fx-font-family: "Segoe UI", sans-serif;
-    -fx-font-size: 14px;
-    -fx-background-color: #f9f9f9;
+    -fx-background-color: #ecf0f1;
 }
 
-.label {
+/* Top bar */
+.top-bar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 15;
+}
+
+.top-bar .label {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* Left panel */
+.left-panel {
+    -fx-background-color: #f4f6f7;
+    -fx-padding: 20;
+    -fx-border-color: #dcdde1;
+    -fx-border-width: 0 2 0 0;
+}
+
+.left-panel .title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
 }
 
-.button {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 5;
-    -fx-padding: 8 16;
+.left-panel .subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
 }
 
-.button:hover {
-    -fx-background-color: #2980b9;
-}
-
-.hbox {
-    -fx-background-color: #2c3e50;
+/* Right top */
+.right-top-panel {
+    -fx-background-color: #dfe6e9;
     -fx-padding: 10;
 }
 
-.vbox {
-    -fx-padding: 20;
-    -fx-spacing: 15;
+.right-top-panel .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d3436;
 }
 
-#logoImage {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.5, 0, 0);
+/* Right bottom & forms */
+.right-bottom-panel,
+.sign-in-form,
+.sign-up-form {
+    -fx-background-color: #dff9fb;
+    -fx-padding: 30;
+}
+
+.right-bottom-panel .label,
+.sign-in-form .label,
+.sign-up-form .label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.right-bottom-panel .description {
+    -fx-font-size: 12px;
+    -fx-text-fill: #636e72;
+}
+
+/* Buttons */
+.button-blue {
+    -fx-background-color: #0984e3;
+    -fx-text-fill: white;
+}
+
+.button-teal {
+    -fx-background-color: #00cec9;
+    -fx-text-fill: white;
+}
+
+.button-grey {
+    -fx-background-color: #b2bec3;
+    -fx-text-fill: black;
 }
