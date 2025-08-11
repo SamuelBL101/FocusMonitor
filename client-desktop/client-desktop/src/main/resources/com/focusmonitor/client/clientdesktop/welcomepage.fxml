@@ -3,82 +3,44 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/17.0.12"
-          fx:controller="com.focusmonitor.client.clientdesktop.WelcomeController"
-          stylesheets="@style.css"
-          hgap="10" vgap="10" styleClass="root">
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/17.0.12"
+           fx:controller="com.focusmonitor.client.clientdesktop.WelcomeController"
+           stylesheets="@style.css"
+           styleClass="root">
 
-    <columnConstraints>
-        <ColumnConstraints percentWidth="70"/>
-        <ColumnConstraints percentWidth="30"/>
-    </columnConstraints>
+    <!-- Main Centered Content -->
+    <VBox alignment="CENTER" spacing="40" prefWidth="1280" prefHeight="720">
+        <!-- Background Layer -->
+        <VBox alignment="CENTER" spacing="10" styleClass="background-title">
+            <Label text="Focus Monitor" styleClass="app-title"/>
+            <Label text="Stay focused. Work smarter." styleClass="app-subtitle"/>
+        </VBox>
 
-    <rowConstraints>
-        <RowConstraints prefHeight="100"/>
-        <RowConstraints vgrow="ALWAYS"/>
-    </rowConstraints>
+        <HBox alignment="CENTER" spacing="40">
+            <!-- Login Card -->
+            <VBox fx:id="loginCard" alignment="CENTER" spacing="15" styleClass="card">
+                <ImageView fx:id="logoImage" fitWidth="120" preserveRatio="true"/>
+                <Label text="Sign In" styleClass="card-title"/>
+                <TextField fx:id="signInUsername" promptText="Username" prefWidth="250"/>
+                <PasswordField fx:id="signInPassword" promptText="Password" prefWidth="250"/>
+                <Label fx:id="loginMessageLabel" styleClass="error-label"/>
+                <Button text="Login" prefWidth="250" styleClass="button-primary" onAction="#submitSignIn"/>
+                <Hyperlink text="Don't have an account? Sign Up" onAction="#switchToSignUp"/>
+            </VBox>
 
-    <!-- Top bar -->
-    <HBox alignment="CENTER_LEFT" spacing="10"
-          GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"
-          styleClass="top-bar">
-        <Label text="Welcome" styleClass="label"/>
-    </HBox>
-
-    <!-- Left main content -->
-    <VBox spacing="20" alignment="CENTER"
-          GridPane.columnIndex="0" GridPane.rowIndex="1"
-          styleClass="left-panel">
-        <ImageView fx:id="logoImage" preserveRatio="true" fitWidth="220"/>
-        <Label text="Focus and efficiency" styleClass="subtitle"/>
-        <Label text="Welcome to Focus Monitor" styleClass="title"/>
+            <!-- Sign Up Card -->
+            <VBox fx:id="signUpCard" alignment="CENTER" spacing="15" styleClass="card" visible="false">
+                <ImageView fx:id="logoImageSignUp" fitWidth="120" preserveRatio="true"/>
+                <Label text="Create Account" styleClass="card-title"/>
+                <TextField fx:id="signUpUsername" promptText="Username" prefWidth="250"/>
+                <TextField fx:id="signUpEmail" promptText="Email" prefWidth="250"/>
+                <PasswordField fx:id="signUpPassword" promptText="Password" prefWidth="250"/>
+                <PasswordField fx:id="signUpConfirmPassword" promptText="Confirm Password" prefWidth="250"/>
+                <Label fx:id="signUpMessageLabel" styleClass="error-label"/>
+                <Button text="Register" prefWidth="250" styleClass="button-primary" onAction="#submitSignUp"/>
+                <Hyperlink text="Already have an account? Sign In" onAction="#switchToSignIn"/>
+            </VBox>
+        </HBox>
     </VBox>
-
-    <!-- Right top panel -->
-    <VBox alignment="CENTER" spacing="10"
-          GridPane.columnIndex="1" GridPane.rowIndex="0"
-          styleClass="right-top-panel">
-        <Label text="Right Top Panel"/>
-    </VBox>
-
-    <!-- Right bottom panel -->
-    <VBox alignment="CENTER" spacing="20"
-          GridPane.columnIndex="1" GridPane.rowIndex="1"
-          fx:id="rightBottomPanel"
-          styleClass="right-bottom-panel">
-        <Label text="Welcome Panel"/>
-        <Label text="Please choose an option below:" styleClass="description"/>
-        <Button text="Sign In" prefWidth="200" styleClass="button-blue" onAction="#handleSignIn"/>
-        <Button text="Sign Up" prefWidth="200" styleClass="button-teal" onAction="#handleSignUp"/>
-    </VBox>
-
-    <!-- Sign In Form -->
-    <VBox alignment="CENTER" spacing="15"
-          GridPane.columnIndex="1" GridPane.rowIndex="1"
-          visible="false" fx:id="signInForm"
-          styleClass="sign-in-form">
-        <Label text="Sign In" />
-        <TextField fx:id="signInUsername" promptText="Username" prefWidth="200"/>
-        <PasswordField fx:id="signInPassword" promptText="Password" prefWidth="200"/>
-        <Button text="Submit" prefWidth="200" styleClass="button-blue" onAction="#submitSignIn"/>
-        <Button text="Back" prefWidth="200" styleClass="button-grey" onAction="#backToMainPanel"/>
-        <Label fx:id="loginMessageLabel" style="-fx-text-fill: red;" />
-
-    </VBox>
-
-    <!-- Sign Up Form -->
-    <VBox alignment="CENTER" spacing="15"
-          GridPane.columnIndex="1" GridPane.rowIndex="1"
-          visible="false" fx:id="signUpForm"
-          styleClass="sign-up-form">
-        <Label text="Sign Up"/>
-        <TextField fx:id="signUpUsername" promptText="Username" prefWidth="200"/>
-        <TextField fx:id="signUpEmail" promptText="Email" prefWidth="200"/>
-        <PasswordField fx:id="signUpPassword" promptText="Password" prefWidth="200"/>
-        <PasswordField fx:id="signUpConfrmPassword" promptText="Confirm Password" prefWidth="200"/>
-        <Button  text="Register" prefWidth="200" styleClass="button-teal" onAction="#submitSignUp"/>
-        <Button text="Back" prefWidth="200" styleClass="button-grey" onAction="#backToMainPanel"/>
-    </VBox>
-
-</GridPane>
+</StackPane>

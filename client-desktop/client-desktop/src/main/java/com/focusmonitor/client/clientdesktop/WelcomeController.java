@@ -1,8 +1,10 @@
 package com.focusmonitor.client.clientdesktop;
 
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -12,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,101 +23,128 @@ import java.net.http.HttpResponse;
 import java.util.prefs.Preferences;
 
 public class WelcomeController {
+
     @FXML
     private ImageView logoImage;
 
+    @FXML
+    private ImageView logoImageSignUp;
+
+    @FXML
+    private VBox loginCard;
+    @FXML
+    private VBox signUpCard;
+
+    // Polia z FXML, každý fx:id iba raz
+    @FXML
+    private TextField signInUsername;
+    @FXML
+    private PasswordField signInPassword;
+    @FXML
+    private Label loginMessageLabel;
+
+    @FXML
+    private TextField signUpUsername;
+    @FXML
+    private TextField signUpEmail;
+    @FXML
+    private PasswordField signUpPassword;
+    @FXML
+    private PasswordField signUpConfirmPassword;
+    @FXML
+    private Label signUpMessageLabel;
+
     public void initialize() {
-        InputStream stream = getClass().getResourceAsStream("image/img.png");
-        Image image = new Image(stream);
-
-        logoImage.setImage(image);
-
+        // Set up both logo images
+        InputStream stream1 = getClass().getResourceAsStream("image/img.png");
+        if (stream1 != null && logoImage != null) {
+            logoImage.setImage(new Image(stream1));
+        }
+        InputStream stream2 = getClass().getResourceAsStream("image/img.png");
+        if (stream2 != null && logoImageSignUp != null) {
+            logoImageSignUp.setImage(new Image(stream2));
+        }
+        // Initial visibility
+        loginCard.setVisible(true);
+        signUpCard.setVisible(false);
     }
-    @FXML
-    private VBox rightBottomPanel;
-    @FXML
-    private VBox signInForm;
-    public void handleSignIn(ActionEvent actionEvent) {
-        rightBottomPanel.visibleProperty().setValue(false);
-        signInForm.setVisible(true);
-    }
-
-    //Register
 
     @FXML
-    private VBox signUpForm;
-    public void handleSignUp(ActionEvent actionEvent) {
-        rightBottomPanel.visibleProperty().setValue(false);
-        signUpForm.setVisible(true);
+    public void switchToSignUp() {
+        loginCard.setVisible(false);
+        signUpCard.setVisible(true);
+        signUpMessageLabel.setText("");
     }
-    @FXML private TextField signInUsername;
-    @FXML private PasswordField signInPassword;
-    @FXML private Label loginMessageLabel;
 
-    public void submitSignIn(ActionEvent actionEvent) {
+    @FXML
+    public void switchToSignIn() {
+        signUpCard.setVisible(false);
+        loginCard.setVisible(true);
+        loginMessageLabel.setText("");
+    }
+
+    @FXML
+    public void submitSignIn() {
         String username = signInUsername.getText();
         String password = signInPassword.getText();
+
         if (username.isEmpty() || password.isEmpty()) {
             loginMessageLabel.setText("Vyplň všetky polia.");
             return;
         }
+
         String jsonBody = String.format("""
         {
             "username": "%s",
             "password": "%s"
         }
         """, username, password);
+
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/auth/login"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(responseBody -> {
-                    // Spracuj JSON odpoveď a ulož token
-                    JSONObject json = new JSONObject(responseBody);
-                    String token = json.getString("token");
-                    System.out.println("JWT token: " + token);
 
-                    Preferences prefs = Preferences.userNodeForPackage(getClass());
-                    prefs.put("jwtToken", token);
-                    String savedToken = prefs.get("jwtToken", null);
-                    System.out.println("Token loaded: " + savedToken);
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    if (response.statusCode() == 200) {
+                        JSONObject json = new JSONObject(response.body());
+                        String token = json.getString("token");
+
+                        Preferences prefs = Preferences.userNodeForPackage(getClass());
+                        prefs.put("jwtToken", token);
+
+                        Platform.runLater(this::goToMainScreen);
+                    } else {
+                        Platform.runLater(() -> loginMessageLabel.setText("Nesprávne používateľské meno alebo heslo."));
+                    }
                 })
                 .exceptionally(e -> {
                     e.printStackTrace();
+                    Platform.runLater(() -> loginMessageLabel.setText("Chyba spojenia so serverom."));
                     return null;
                 });
     }
 
-    public void backToMainPanel(ActionEvent actionEvent) {
-
-        rightBottomPanel.visibleProperty().setValue(true);
-        signInForm.setVisible(false);
-        signUpForm.setVisible(false);
-
-    }
-    @FXML private TextField signUpUsername;
-    @FXML private TextField signUpEmail;
-    @FXML private PasswordField signUpPassword;
-    @FXML private PasswordField signUpConfrmPassword;
-    public void submitSignUp(ActionEvent actionEvent) {
+    @FXML
+    public void submitSignUp() {
         String username = signUpUsername.getText();
         String email = signUpEmail.getText();
         String password = signUpPassword.getText();
-        String confirmPassword = signUpConfrmPassword.getText();
+        String confirmPassword = signUpConfirmPassword.getText();
 
         if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            System.out.println("Vyplň všetky polia.");
+            signUpMessageLabel.setText("Vyplň všetky polia.");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            System.out.println("Heslá sa nezhodujú.");
+            signUpMessageLabel.setText("Heslá sa nezhodujú.");
             return;
         }
+
         String jsonBody = String.format("""
         {
             "username": "%s",
@@ -122,6 +152,7 @@ public class WelcomeController {
             "email": "%s"
         }
         """, username, password, email);
+
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/api/auth/register"))
@@ -131,27 +162,31 @@ public class WelcomeController {
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(response -> {
-                    System.out.println("Stavový kód: " + response.statusCode());
-                    System.out.println("Odpoveď servera: " + response.body());
-
-                    // UI logika po úspechu
                     if (response.statusCode() == 200) {
-                        javafx.application.Platform.runLater(() -> {
-                            //showPanel(rightBottomPanel);
-                            showMessage("Registrácia úspešná.");
+                        Platform.runLater(() -> {
+                            signUpMessageLabel.setText("Registrácia úspešná! Môžete sa prihlásiť.");
+                            switchToSignIn();
                         });
                     } else {
-                        javafx.application.Platform.runLater(() -> showMessage("Chyba: " + response.body()));
+                        Platform.runLater(() -> signUpMessageLabel.setText("Chyba: " + response.body()));
                     }
                 })
                 .exceptionally(e -> {
                     e.printStackTrace();
-                    javafx.application.Platform.runLater(() -> showMessage("Chyba spojenia s API."));
+                    Platform.runLater(() -> signUpMessageLabel.setText("Chyba spojenia so serverom."));
                     return null;
                 });
-
     }
 
-    private void showMessage(String s) {
+    private void goToMainScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("homepage.fxml")); // uprav podľa cesty
+            Parent root = loader.load();
+            Stage stage = (Stage) signInUsername.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Focus Monitor - Dashboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

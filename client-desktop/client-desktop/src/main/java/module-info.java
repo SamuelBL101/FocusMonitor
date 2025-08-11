@@ -11,6 +11,8 @@ module com.focusmonitor.client.clientdesktop {
     requires java.net.http;
     requires org.json;
     requires java.prefs;
+    requires com.sun.jna.platform;
+    requires com.sun.jna;
 
     opens com.focusmonitor.client.clientdesktop to javafx.fxml;
     exports com.focusmonitor.client.clientdesktop;
