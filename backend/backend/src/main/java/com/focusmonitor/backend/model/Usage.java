@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "app_usage")
-public class AppUsage {
+public class Usage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

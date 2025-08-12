@@ -38,7 +38,7 @@ public class AuthController {
         if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
             return ResponseEntity.status(401).body("Nespravne prihlasovacie udaje");
         }
-        String token = jwtUtil.generateToken(existingUser.getUsername());
+        String token = jwtUtil.generateToken(existingUser.getId().toString());
         System.out.println("Vygenerovaný token: " + token);
         return ResponseEntity.ok(Map.of(
                 "message", "Prihlásenie úspešné",

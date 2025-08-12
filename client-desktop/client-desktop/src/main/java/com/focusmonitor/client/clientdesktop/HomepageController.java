@@ -1,5 +1,6 @@
 package com.focusmonitor.client.clientdesktop;
 
+import com.focusmonitor.client.clientdesktop.modules.ActivityTracker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -24,10 +25,8 @@ public class HomepageController {
     public void startMonitor(ActionEvent actionEvent) throws InterruptedException {
         if (activityTracker == null){
             this.activityTracker = new ActivityTracker(this);
-        } else {
-            System.out.println("Monitor is already running.");
         }
-
+        this.activityTracker.run();
         Thread t = new Thread(activityTracker);
         t.setDaemon(true);
         t.start();
@@ -38,4 +37,5 @@ public class HomepageController {
         javafx.application.Platform.runLater(() -> {
             activeWindowLabel.setText(currentActivity);
         });    }
+
 }

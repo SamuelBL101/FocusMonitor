@@ -115,7 +115,8 @@ public class WelcomeController {
 
                         Preferences prefs = Preferences.userNodeForPackage(getClass());
                         prefs.put("jwtToken", token);
-
+                        String userID = new Auth().getUserIDfromToken(token);
+                        prefs.put("userID", userID);
                         Platform.runLater(this::goToMainScreen);
                     } else {
                         Platform.runLater(() -> loginMessageLabel.setText("Nesprávne používateľské meno alebo heslo."));

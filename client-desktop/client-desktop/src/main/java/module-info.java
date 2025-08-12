@@ -16,4 +16,6 @@ module com.focusmonitor.client.clientdesktop {
 
     opens com.focusmonitor.client.clientdesktop to javafx.fxml;
     exports com.focusmonitor.client.clientdesktop;
+    exports com.focusmonitor.client.clientdesktop.modules;
+    opens com.focusmonitor.client.clientdesktop.modules to javafx.fxml;
 }

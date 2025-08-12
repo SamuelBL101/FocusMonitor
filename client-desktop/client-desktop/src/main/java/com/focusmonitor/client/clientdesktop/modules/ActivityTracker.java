@@ -1,20 +1,27 @@
-package com.focusmonitor.client.clientdesktop;
+package com.focusmonitor.client.clientdesktop.modules;
 
+import com.focusmonitor.client.clientdesktop.HomepageController;
+import com.focusmonitor.client.clientdesktop.WelcomeController;
+import com.focusmonitor.client.clientdesktop.communication.UsageSender;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.prefs.Preferences;
 
 public class ActivityTracker implements Runnable{
 
     private final HomepageController homepageController;
     private boolean running = false;
     private static final int MAX_PATH = 1024;
+    private final ConcurrentLinkedQueue<UsageSession> queue = new ConcurrentLinkedQueue<>();
 
     public ActivityTracker(HomepageController homepageController) {
         this.homepageController = homepageController;
     }
-    public static String getCurrentActivity() throws InterruptedException {
+    public static Activity getCurrentActivity() throws InterruptedException {
         WinDef.HWND hwnd = User32.INSTANCE.GetForegroundWindow();
         if (hwnd == null) {
             return null;
@@ -24,23 +31,19 @@ public class ActivityTracker implements Runnable{
         User32.INSTANCE.GetWindowText(hwnd, windowText, MAX_PATH);
         String windowTitle = Native.toString(windowText);
 
-        // Get Window Class Name
         char[] className = new char[MAX_PATH];
         User32.INSTANCE.GetClassName(hwnd, className, MAX_PATH);
         String windowClassName = Native.toString(className);
 
-        // Get Process ID (PID)
         IntByReference pid = new IntByReference();
         User32.INSTANCE.GetWindowThreadProcessId(hwnd, pid);
 
-        // Get Executable Path from PID
         String executablePath = getProcessPath(pid.getValue());
 
-        return String.format(
-                "Title: %s\nClass: %s\nExecutable: %s",
-                windowTitle,
-                windowClassName,
-                executablePath
+        return new Activity(
+                windowTitle.isEmpty() ? "Unknown Window" : windowTitle,
+                java.time.LocalTime.now().toString(),
+                java.time.LocalTime.now().toString()
         );
 
     }
@@ -62,18 +65,36 @@ public class ActivityTracker implements Runnable{
 
     @Override
     public void run() {
-        String lastActivity = "";
+        Activity lastActivity = null;
+        long millis = System.currentTimeMillis();
+        System.out.println("Starting activity tracking..." + millis);
         this.running = true;
         while (running) {
             try {
-                String currentActivity = getCurrentActivity();
+                Activity currentActivity = getCurrentActivity();
                 if (currentActivity != null && !currentActivity.equals(lastActivity)) {
+                    String endtime = java.time.LocalTime.now().toString();
+                    String starttime = java.time.LocalTime.now().toString();
+                    Preferences prefs = Preferences.userNodeForPackage(WelcomeController.class);
+
+                    String userId = prefs.get("userID", null);
+                    System.out.println("Current activity: " + currentActivity.getAppName() + "userid: " + userId);
+                    if (userId != null) {
+                        UsageSession usageSession = new UsageSession(Long.parseLong(userId), currentActivity);
+                        queue.add(new UsageSession(Long.parseLong(userId), currentActivity));
+                        System.out.println("fe" + System.currentTimeMillis());
+                        if (millis + 10000 < System.currentTimeMillis()) {
+                            System.out.println("Sending usage data for: " + currentActivity.getAppName());
+                            millis = System.currentTimeMillis();
+                            sendUsageData();
+                        }
+                    }
                     System.out.println("Aktívne okno: " + currentActivity);
                     lastActivity = currentActivity;
 
                     if (homepageController != null) {
-                        homepageController.updateActivity(currentActivity);
                     }
+
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -88,5 +109,15 @@ public class ActivityTracker implements Runnable{
 
     public void stopRunning(){
         this.running = false;
+    }
+    public void sendUsageData() {
+        System.out.println("Sending usage data...");
+        while (!queue.isEmpty()) {
+            System.out.println("Processing usage session from queue...");
+            UsageSession usageSession = queue.poll();
+            if (usageSession != null) {
+                UsageSender.sendUsage(usageSession);
+            }
+        }
     }
 }
