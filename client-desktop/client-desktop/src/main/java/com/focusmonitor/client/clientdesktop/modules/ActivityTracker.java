@@ -42,8 +42,8 @@ public class ActivityTracker implements Runnable{
 
         return new Activity(
                 windowTitle.isEmpty() ? "Unknown Window" : windowTitle,
-                java.time.LocalTime.now().toString(),
-                java.time.LocalTime.now().toString()
+                java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now()
         );
 
     }
@@ -80,9 +80,9 @@ public class ActivityTracker implements Runnable{
                     String userId = prefs.get("userID", null);
                     System.out.println("Current activity: " + currentActivity.getAppName() + "userid: " + userId);
                     if (userId != null) {
-                        UsageSession usageSession = new UsageSession(Long.parseLong(userId), currentActivity);
+                        //UsageSession usageSession = new UsageSession(Long.parseLong(userId), currentActivity);
                         queue.add(new UsageSession(Long.parseLong(userId), currentActivity));
-                        System.out.println("fe" + System.currentTimeMillis());
+                        //System.out.println("fe" + System.currentTimeMillis());
                         if (millis + 10000 < System.currentTimeMillis()) {
                             System.out.println("Sending usage data for: " + currentActivity.getAppName());
                             millis = System.currentTimeMillis();

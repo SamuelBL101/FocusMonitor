@@ -16,6 +16,8 @@ public class UsageController {
 
    @PostMapping
     public Usage createUsage(@RequestBody Usage usage) {
+       Usage usg = usage;
+       System.out.println("Received usage: " + usg);
          return usageService.saveUsage(usage);
     }
     @PostMapping("/getUsage/{userId}/{date}")

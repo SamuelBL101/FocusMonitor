@@ -1,5 +1,7 @@
 package com.focusmonitor.client.clientdesktop.modules;
 
+import java.time.format.DateTimeFormatter;
+
 public class UsageSession {
     private Long userId;
     private Activity activity;
@@ -23,10 +25,16 @@ public class UsageSession {
     }
 
     public String toJson() {
-        return "{ \"userId\": " + userId + ", " +
-                "\"activity\": { " +
-                "\"appName\": \"" + activity.getAppName() + "\", " +
-                "\"startTime\": \"" + activity.getStartTime() + "\", " +
-                "\"endTime\": \"" + activity.getEndTime() + "\" } }";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String start = activity.getStartTime().format(formatter);
+        String end = activity.getEndTime().format(formatter);
+
+        return "{ " +
+                "\"user\": { \"id\": " + userId + " }, " +
+                "\"applicationName\": \"" + activity.getAppName() + "\", " +
+                "\"startTime\": \"" + start + "\", " +
+                "\"endTime\": \"" + end + "\" " +
+                "}";
     }
+
 }

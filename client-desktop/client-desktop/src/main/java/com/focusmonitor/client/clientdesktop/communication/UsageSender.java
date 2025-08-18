@@ -14,7 +14,6 @@ public class UsageSender {
     public static void sendUsage(UsageSession usageData) {
         try {
 
-            // otvor HTTP spojenie
             HttpClient client = HttpClient.newHttpClient();
             String json = usageData.toJson();
             HttpRequest request = HttpRequest.newBuilder()

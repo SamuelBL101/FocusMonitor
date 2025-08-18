@@ -2,12 +2,15 @@ package com.focusmonitor.backend.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "app_usage")
+@Table(name = "usage")
 public class Usage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,21 +19,16 @@ public class Usage {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "application_name", nullable = false)
     private String applicationName;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
 
-    @Column(nullable = false)
-    private LocalTime startTime;
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
-    @Column(nullable = false)
-    private LocalTime endTime;
-
-    @Column(nullable = false)
-    private Long durationSeconds;
-
+    // getters & setters
     public Long getId() {
         return id;
     }
@@ -47,27 +45,27 @@ public class Usage {
         this.user = user;
     }
 
-    public String getAppName() {
+    public String getApplicationName() {
         return applicationName;
     }
 
-    public void setAppName(String appName) {
-        this.applicationName = appName;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
-    public Long getUsageTimeSeconds() {
-        return durationSeconds;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setUsageTimeSecond(Long usageTimeMinutes) {
-        this.durationSeconds = usageTimeMinutes;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }}
-
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+}
