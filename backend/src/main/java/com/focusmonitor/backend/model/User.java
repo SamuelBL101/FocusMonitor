@@ -1,52 +1,61 @@
 package com.focusmonitor.backend.model;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Getter
+@Setter
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(name = "users_username_key",
+                columnNames = {"username"}),
+        @UniqueConstraint(name = "users_email_key",
+                columnNames = {"email"})})
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "email", nullable = false)
     private String email;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Size(max = 500)
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
 
-    public String getUsername() {
-        return username;
-    }
+    @Size(max = 50)
+    @NotNull
+    @ColumnDefault("'Europe/Bratislava'")
+    @Column(name = "timezone", nullable = false, length = 50)
+    private String timezone;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @NotNull
+    @ColumnDefault("now()")
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
 
-    public String getPassword() {
-        return password;
-    }
+    @Column(name = "last_active_at")
+    private Instant lastActiveAt;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
