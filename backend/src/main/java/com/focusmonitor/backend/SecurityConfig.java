@@ -15,13 +15,13 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)     // vypnúť CSRF ochranu (bez nej REST API beží ľahšie)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()  // povoliť prístup bez prihlasovania na tieto endpointy
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().permitAll()
                 )
-                .httpBasic(AbstractHttpConfigurer::disable)   // prípadne môžeš použiť formLogin() alebo httpBasic()
-        .formLogin(AbstractHttpConfigurer::disable); // povoliť form login, ak je potrebné
+                .httpBasic(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable);
         return http.build();
     }
     @Bean
