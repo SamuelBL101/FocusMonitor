@@ -1,6 +1,6 @@
 package com.focusmonitor.backend.services;
 
-import com.focusmonitor.backend.JwtUtil;
+import com.focusmonitor.backend.security.JwtUtil;
 import com.focusmonitor.backend.dto.AuthResponse;
 import com.focusmonitor.backend.dto.LoginRequest;
 import com.focusmonitor.backend.dto.RegisterRequest;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,9 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
+        }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists");
         }
         User user = new User();
         user.setEmail(request.getEmail());
