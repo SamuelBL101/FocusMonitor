@@ -2,20 +2,32 @@ package com.focusmonitor.client.clientdesktop.modules;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Activity {
     private String appName;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String windowTitle;
 
-    public Activity(String appName, LocalDateTime startTime, LocalDateTime endTime) {
+    public Activity(String appName, String windowTitle) {
 
         this.appName = appName;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.windowTitle = windowTitle;
+
     }
 
     public String getAppName() { return appName; }
-    public LocalDateTime getStartTime() { return startTime; }
-    public LocalDateTime getEndTime() { return endTime; }
+    public String getWindowTitle() { return  windowTitle;};
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return Objects.equals(appName, activity.appName) && Objects.equals(windowTitle, activity.windowTitle);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appName, windowTitle);
+    }
 }

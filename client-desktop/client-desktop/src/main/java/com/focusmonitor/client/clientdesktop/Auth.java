@@ -16,10 +16,10 @@ public class Auth {
             String payloadJson = new String(decodedPayload);
             JSONObject jsonObject = new JSONObject(payloadJson);
 
-            return jsonObject.getString("sub"); // Assuming 'sub' is the user ID field in the JWT payload
+            return jsonObject.getString("sub");
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Return null if an error occurs
+            return null;
         }
     }
 }

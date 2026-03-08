@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface ActivitySessionRepository extends JpaRepository<ActivitySession, UUID> {
-    Optional<ActivitySession> findByUserIdAndEndedAtIsNull(UUID userId);
+    Optional<ActivitySession> findFirstByUserIdAndEndedAtIsNullOrderByStartedAtDesc(UUID userId);
 
     List<ActivitySession> findByUserIdAndStartedAtBetween(UUID userId, Instant start, Instant end);
 

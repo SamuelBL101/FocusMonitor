@@ -11,7 +11,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class ActivitySessionService {
@@ -27,14 +29,18 @@ public class ActivitySessionService {
         activitySession.setIdleSeconds(0);
 
         return activitySessionRepository.save(activitySession);
-
-
     }
 
     public ActivitySession endSession(UUID userId) {
-        ActivitySession activitySession = activitySessionRepository.findByUserIdAndEndedAtIsNull(userId).orElseThrow(() -> new RuntimeException("Couldn't return AcitivitySesion on END sesion"));
-        activitySession.setEndedAt(Instant.now());
-        return activitySessionRepository.save(activitySession);
+        Optional<ActivitySession> session = activitySessionRepository
+                .findFirstByUserIdAndEndedAtIsNullOrderByStartedAtDesc(userId);
+
+        if (session.isEmpty()) {
+            return null;
+        }
+
+        session.get().setEndedAt(Instant.now());
+        return activitySessionRepository.save(session.get());
     }
 
     public List<ActivitySession> getTodaySessions(UUID userId) {

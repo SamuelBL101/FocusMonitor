@@ -1,7 +1,6 @@
 package com.focusmonitor.client.clientdesktop.modules;
 
-import com.focusmonitor.client.clientdesktop.HomepageController;
-import com.focusmonitor.client.clientdesktop.WelcomeController;
+import com.focusmonitor.client.clientdesktop.controller.HomepageController;
 import com.focusmonitor.client.clientdesktop.communication.UsageSender;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -9,9 +8,8 @@ import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.prefs.Preferences;
 
-public class ActivityTracker implements Runnable{
+public class ActivityTracker implements Runnable {
 
     private final HomepageController homepageController;
     private boolean running = false;
@@ -21,6 +19,7 @@ public class ActivityTracker implements Runnable{
     public ActivityTracker(HomepageController homepageController) {
         this.homepageController = homepageController;
     }
+
     public static Activity getCurrentActivity() throws InterruptedException {
         WinDef.HWND hwnd = User32.INSTANCE.GetForegroundWindow();
         if (hwnd == null) {
@@ -41,9 +40,8 @@ public class ActivityTracker implements Runnable{
         String executablePath = getProcessPath(pid.getValue());
 
         return new Activity(
-                windowTitle.isEmpty() ? "Unknown Window" : windowTitle,
-                java.time.LocalDateTime.now(),
-                java.time.LocalDateTime.now()
+                windowClassName.isEmpty() ? "Unknown AppName " : windowClassName,
+                windowTitle.isEmpty() ? "Unknown Window" : windowTitle
         );
 
     }
@@ -73,28 +71,13 @@ public class ActivityTracker implements Runnable{
             try {
                 Activity currentActivity = getCurrentActivity();
                 if (currentActivity != null && !currentActivity.equals(lastActivity)) {
-                    String endtime = java.time.LocalTime.now().toString();
-                    String starttime = java.time.LocalTime.now().toString();
-                    Preferences prefs = Preferences.userNodeForPackage(WelcomeController.class);
 
-                    String userId = prefs.get("userID", null);
-                    System.out.println("Current activity: " + currentActivity.getAppName() + "userid: " + userId);
-                    if (userId != null) {
-                        //UsageSession usageSession = new UsageSession(Long.parseLong(userId), currentActivity);
-                        queue.add(new UsageSession(Long.parseLong(userId), currentActivity));
-                        //System.out.println("fe" + System.currentTimeMillis());
-                        if (millis + 10000 < System.currentTimeMillis()) {
-                            System.out.println("Sending usage data for: " + currentActivity.getAppName());
-                            millis = System.currentTimeMillis();
-                            sendUsageData();
-                        }
+                    if (lastActivity != null){
+                        UsageSender.endSession();
                     }
-                    System.out.println("Aktívne okno: " + currentActivity);
+                    UsageSender.callStartSession(currentActivity.getAppName(),currentActivity.getWindowTitle());
+                    homepageController.updateActivity(currentActivity.getAppName());
                     lastActivity = currentActivity;
-
-                    if (homepageController != null) {
-                    }
-
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -107,9 +90,10 @@ public class ActivityTracker implements Runnable{
         }
     }
 
-    public void stopRunning(){
+    public void stopRunning() {
         this.running = false;
     }
+
     public void sendUsageData() {
         System.out.println("Sending usage data...");
         while (!queue.isEmpty()) {
@@ -119,5 +103,9 @@ public class ActivityTracker implements Runnable{
                 UsageSender.sendUsage(usageSession);
             }
         }
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

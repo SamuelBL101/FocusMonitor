@@ -5,13 +5,12 @@
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            xmlns="http://javafx.com/javafx/17.0.12"
-           fx:controller="com.focusmonitor.client.clientdesktop.WelcomeController"
+           fx:controller="com.focusmonitor.client.clientdesktop.controller.WelcomeController"
            stylesheets="@style.css"
            styleClass="root">
 
     <!-- Main Centered Content -->
     <VBox alignment="CENTER" spacing="40" prefWidth="1280" prefHeight="720">
-        <!-- Background Layer -->
         <VBox alignment="CENTER" spacing="10" styleClass="background-title">
             <Label text="Focus Monitor" styleClass="app-title"/>
             <Label text="Stay focused. Work smarter." styleClass="app-subtitle"/>
@@ -22,7 +21,7 @@
             <VBox fx:id="loginCard" alignment="CENTER" spacing="15" styleClass="card">
                 <ImageView fx:id="logoImage" fitWidth="120" preserveRatio="true"/>
                 <Label text="Sign In" styleClass="card-title"/>
-                <TextField fx:id="signInUsername" promptText="Username" prefWidth="250"/>
+                <TextField fx:id="signInEmail" promptText="E-mail" prefWidth="250"/>
                 <PasswordField fx:id="signInPassword" promptText="Password" prefWidth="250"/>
                 <Label fx:id="loginMessageLabel" styleClass="error-label"/>
                 <Button text="Login" prefWidth="250" styleClass="button-primary" onAction="#submitSignIn"/>

@@ -1,5 +1,6 @@
-package com.focusmonitor.client.clientdesktop;
+package com.focusmonitor.client.clientdesktop.controller;
 
+import com.focusmonitor.client.clientdesktop.AppConfig;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,9 +36,8 @@ public class WelcomeController {
     @FXML
     private VBox signUpCard;
 
-    // Polia z FXML, každý fx:id iba raz
     @FXML
-    private TextField signInUsername;
+    private TextField signInEmail;
     @FXML
     private PasswordField signInPassword;
     @FXML
@@ -55,16 +55,14 @@ public class WelcomeController {
     private Label signUpMessageLabel;
 
     public void initialize() {
-        // Set up both logo images
-        InputStream stream1 = getClass().getResourceAsStream("image/img.png");
+        InputStream stream1 = getClass().getResourceAsStream("/com/focusmonitor/client/clientdesktop/image/img.png");
         if (stream1 != null && logoImage != null) {
             logoImage.setImage(new Image(stream1));
         }
-        InputStream stream2 = getClass().getResourceAsStream("image/img.png");
+        InputStream stream2 = getClass().getResourceAsStream("/com/focusmonitor/client/clientdesktop/image/img.png");
         if (stream2 != null && logoImageSignUp != null) {
             logoImageSignUp.setImage(new Image(stream2));
         }
-        // Initial visibility
         loginCard.setVisible(true);
         signUpCard.setVisible(false);
     }
@@ -85,24 +83,24 @@ public class WelcomeController {
 
     @FXML
     public void submitSignIn() {
-        String username = signInUsername.getText();
+        String email = signInEmail.getText();
         String password = signInPassword.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             loginMessageLabel.setText("Vyplň všetky polia.");
             return;
         }
 
         String jsonBody = String.format("""
         {
-            "username": "%s",
+            "email": "%s",
             "password": "%s"
         }
-        """, username, password);
+        """, email, password);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/auth/login"))
+                .uri(URI.create(AppConfig.getBaseURL() + "/api/auth/login"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
@@ -112,10 +110,10 @@ public class WelcomeController {
                     if (response.statusCode() == 200) {
                         JSONObject json = new JSONObject(response.body());
                         String token = json.getString("token");
+                        String userID = json.getString("userId");
 
                         Preferences prefs = Preferences.userNodeForPackage(getClass());
                         prefs.put("jwtToken", token);
-                        String userID = new Auth().getUserIDfromToken(token);
                         prefs.put("userID", userID);
                         Platform.runLater(this::goToMainScreen);
                     } else {
@@ -156,7 +154,7 @@ public class WelcomeController {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/auth/register"))
+                .uri(URI.create(AppConfig.getBaseURL() + "/api/auth/register"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
@@ -181,9 +179,9 @@ public class WelcomeController {
 
     private void goToMainScreen() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("homepage.fxml")); // uprav podľa cesty
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/focusmonitor/client/clientdesktop/homepage.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) signInUsername.getScene().getWindow();
+            Stage stage = (Stage) signInEmail.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Focus Monitor - Dashboard");
         } catch (IOException e) {

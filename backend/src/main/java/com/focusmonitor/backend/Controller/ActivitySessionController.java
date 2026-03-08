@@ -4,6 +4,7 @@ import com.focusmonitor.backend.dto.StartSessionRequest;
 import com.focusmonitor.backend.model.ActivitySession;
 import com.focusmonitor.backend.repository.UserRepository;
 import com.focusmonitor.backend.services.ActivitySessionService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +39,12 @@ public class ActivitySessionController {
     }
 
     @PutMapping("/end")
-    public ActivitySession endSession() {
-        return this.activitySessionService.endSession(getCurrentUserId());
-    }
+    public ResponseEntity<?> endSession() {
+        ActivitySession session = activitySessionService.endSession(getCurrentUserId());
+        if (session == null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.ok(session);    }
 
     @GetMapping("/todaylist")
     public List<ActivitySession> getTodaySessionList() {
