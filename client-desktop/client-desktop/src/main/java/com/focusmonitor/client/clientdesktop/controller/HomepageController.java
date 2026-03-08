@@ -3,9 +3,15 @@ package com.focusmonitor.client.clientdesktop.controller;
 import com.focusmonitor.client.clientdesktop.modules.ActivityTracker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.http.HttpClient;
+import java.util.prefs.Preferences;
 
 public class HomepageController {
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -18,7 +24,20 @@ public class HomepageController {
         welcomeLabel.setText("Welcome to your Dashboard!");
     }
     public void logout() {
-        System.out.println("User logged out.");
+        Preferences prefs = Preferences.userNodeForPackage(WelcomeController.class);
+        if (activityTracker != null) {
+            activityTracker.stopRunning();
+        }
+        prefs.remove("jwtToken");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/focusmonitor/client/clientdesktop/welcomepage.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) activeWindowLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("LoginPage");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startMonitor(ActionEvent actionEvent) throws InterruptedException {
@@ -37,7 +56,9 @@ public class HomepageController {
     public void updateActivity(String currentActivity) {
         javafx.application.Platform.runLater(() -> {
             activeWindowLabel.setText(currentActivity);
-        });    }
+        });
+    }
+
 
 
 }

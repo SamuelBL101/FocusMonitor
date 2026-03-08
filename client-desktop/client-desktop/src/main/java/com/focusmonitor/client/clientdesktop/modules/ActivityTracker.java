@@ -92,6 +92,7 @@ public class ActivityTracker implements Runnable {
 
     public void stopRunning() {
         this.running = false;
+        UsageSender.endSession();
     }
 
     public void sendUsageData() {
