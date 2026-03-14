@@ -1,5 +1,6 @@
 package com.focusmonitor.client.clientdesktop.controller;
 
+import com.focusmonitor.client.clientdesktop.communication.UsageSender;
 import com.focusmonitor.client.clientdesktop.modules.ActivityTracker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ public class HomepageController {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     public Label activeWindowLabel;
     private ActivityTracker activityTracker;
+    private Thread activityTrackerThread;
     @FXML
     private Label welcomeLabel;
 
@@ -28,6 +30,16 @@ public class HomepageController {
         if (activityTracker != null) {
             activityTracker.stopRunning();
         }
+
+        if (activityTrackerThread != null && activityTrackerThread.isAlive()) {
+            try {
+                activityTrackerThread.join(1500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        UsageSender.endSession();
         prefs.remove("jwtToken");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/focusmonitor/client/clientdesktop/welcomepage.fxml"));
@@ -47,9 +59,9 @@ public class HomepageController {
         if (activityTracker == null){
             this.activityTracker = new ActivityTracker(this);
         }
-        Thread t = new Thread(activityTracker);
-        t.setDaemon(true);
-        t.start();
+        activityTrackerThread = new Thread(activityTracker);
+        activityTrackerThread.setDaemon(true);
+        activityTrackerThread.start();
 
     }
 

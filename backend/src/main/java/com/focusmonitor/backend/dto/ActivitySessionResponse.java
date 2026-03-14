@@ -12,7 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ActivitySessionResponse {
     private UUID id;
+    private String appName;
     private String windowTitle;
     private Instant startedAt;
     private Instant endedAt;
+    private Integer durationSeconds;
+    private Integer idleSeconds;
 }

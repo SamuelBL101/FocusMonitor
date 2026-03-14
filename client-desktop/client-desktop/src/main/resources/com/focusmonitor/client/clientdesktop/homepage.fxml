@@ -1,88 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.focusmonitor.client.clientdesktop.controller.HomepageController"
+           stylesheets="@style.css"
+           styleClass="root">
 
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.focusmonitor.client.clientdesktop.controller.HomepageController"
-            style="-fx-background-color: #f4f4f9;">
+    <Pane mouseTransparent="true" styleClass="bg-orb bg-orb-one"/>
+    <Pane mouseTransparent="true" styleClass="bg-orb bg-orb-two"/>
 
-    <!-- Top Navigation Bar -->
-    <top>
-        <HBox spacing="20" style="-fx-background-color: #3498db; -fx-padding: 10;">
-            <Label text="Focus Monitor" style="-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <HBox spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                <Button text="Dashboard" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Settings" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Logout" style="-fx-background-color: transparent; -fx-text-fill: white;" onAction="#logout"/>
+    <BorderPane maxWidth="1240" maxHeight="700" styleClass="dashboard-shell">
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="24" styleClass="dashboard-topbar">
+                <VBox spacing="4">
+                    <Label text="Focus Monitor" styleClass="topbar-brand"/>
+                    <Label text="Desktop focus dashboard" styleClass="topbar-subtitle"/>
+                </VBox>
+                <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
+                    <Button text="Dashboard" styleClass="nav-chip" id="dashboardNavButton"/>
+                    <Button text="Settings" styleClass="nav-chip"/>
+                    <Button text="Logout" styleClass="nav-chip" id="logoutNavButton" onAction="#logout"/>
+                </HBox>
             </HBox>
-        </HBox>
-    </top>
+        </top>
 
-    <!-- Left Sidebar -->
-    <left>
-        <VBox spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 20;">
-            <Button text="Overview" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Button text="Tasks" style="-fx-background-color: transparent; -fx-text-fill: #2c3e50;"/>
-            <Button text="Reports" style="-fx-background-color: transparent; -fx-text-fill: #2c3e50;"/>
-        </VBox>
-    </left>
+        <left>
+            <VBox spacing="18" styleClass="dashboard-sidebar">
+                <Label text="Workspace" styleClass="sidebar-title"/>
+                <Button text="Overview" styleClass="sidebar-button" id="overviewSidebarButton"/>
+                <Button text="Tasks" styleClass="sidebar-button"/>
+                <Button text="Reports" styleClass="sidebar-button"/>
 
-    <!-- Center Content -->
-    <center>
-
-        <GridPane hgap="20" vgap="20" style="-fx-padding: 20;">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="50.0" />
-                <ColumnConstraints percentWidth="50.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints percentHeight="50.0" />
-                <RowConstraints percentHeight="50.0" />
-            </rowConstraints>
-
-            <!-- Top-Left: Monitoring Control -->
-            <VBox alignment="CENTER" spacing="15" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <Label text="Start a New Session" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                <Button text="Start Monitoring" styleClass="button-primary" prefWidth="200" onAction="#startMonitor"/>
-                <Label text="Click to begin tracking your activity." style="-fx-text-fill: #6c757d;"/>
+                <VBox spacing="10" styleClass="sidebar-note">
+                    <Label text="Tracking mode" styleClass="sidebar-note-title"/>
+                    <Label text="Keep the monitor running while you work to build cleaner daily summaries." wrapText="true" styleClass="sidebar-note-copy"/>
+                </VBox>
             </VBox>
+        </left>
 
-            <!-- Top-Right: Today's Stats -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                <Label text="Today's Stats" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                <Label fx:id="welcomeLabel" style="-fx-font-size: 16px;"/>
-                <Label fx:id="activeWindowLabel" text="Aktívne okno sa zobrazí tu" style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+        <center>
+            <GridPane hgap="20" vgap="20" styleClass="dashboard-grid">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="55.0" />
+                    <ColumnConstraints percentWidth="45.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints percentHeight="48.0" />
+                    <RowConstraints percentHeight="52.0" />
+                </rowConstraints>
 
-                <!-- Placeholder for stats content -->
-            </VBox>
+                <VBox spacing="18" styleClass="dashboard-card" id="heroDashboardCard" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Focus Session Control" styleClass="panel-kicker"/>
+                    <Label text="Start tracking the work in front of you." styleClass="panel-title" wrapText="true"/>
+                    <Label text="Launch monitoring when you're ready. The desktop client will watch your active window changes and keep the backend session in sync." styleClass="panel-copy" wrapText="true"/>
+                    <Button text="Start Monitoring" styleClass="button-primary" id="heroStartButton" prefWidth="220" onAction="#startMonitor"/>
+                    <Label text="One click starts a new monitored run." styleClass="muted-copy"/>
+                </VBox>
 
-            <!-- Bottom-Left: Recent Activity -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                <Label text="Recent Activity" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                <!-- Placeholder for activity list -->
-            </VBox>
+                <VBox spacing="14" styleClass="dashboard-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Live Status" styleClass="panel-kicker"/>
+                    <Label fx:id="welcomeLabel" styleClass="panel-title-small" wrapText="true"/>
+                    <VBox spacing="8" styleClass="status-block">
+                        <Label text="Current window" styleClass="status-label"/>
+                        <Label fx:id="activeWindowLabel" text="Active window will appear here" styleClass="status-value" wrapText="true"/>
+                    </VBox>
+                    <HBox spacing="12">
+                        <VBox spacing="4" styleClass="mini-stat">
+                            <Label text="State" styleClass="mini-stat-label"/>
+                            <Label text="Ready" styleClass="mini-stat-value"/>
+                        </VBox>
+                        <VBox spacing="4" styleClass="mini-stat">
+                            <Label text="Sync" styleClass="mini-stat-label"/>
+                            <Label text="Online" styleClass="mini-stat-value"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
 
-            <!-- Bottom-Right: Productivity Chart -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Label text="Productivity Chart" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                <!-- Placeholder for a chart -->
-            </VBox>
-        </GridPane>
-    </center>
+                <VBox spacing="14" styleClass="dashboard-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Recent Activity" styleClass="panel-kicker"/>
+                    <Label text="Session timeline" styleClass="panel-title-small"/>
+                    <VBox spacing="10">
+                        <HBox spacing="12" styleClass="activity-row">
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Morning planning" styleClass="activity-title"/>
+                                <Label text="Focused setup and review block" styleClass="activity-copy"/>
+                            </VBox>
+                            <Label text="08:30" styleClass="activity-time"/>
+                        </HBox>
+                        <HBox spacing="12" styleClass="activity-row">
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Deep work window" styleClass="activity-title"/>
+                                <Label text="Low interruption streak placeholder" styleClass="activity-copy"/>
+                            </VBox>
+                            <Label text="10:15" styleClass="activity-time"/>
+                        </HBox>
+                        <HBox spacing="12" styleClass="activity-row">
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Wrap-up review" styleClass="activity-title"/>
+                                <Label text="Quick summary before session end" styleClass="activity-copy"/>
+                            </VBox>
+                            <Label text="13:40" styleClass="activity-time"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
 
-    <!-- Bottom Footer -->
-    <bottom>
-        <HBox alignment="CENTER" style="-fx-background-color: #bdc3c7; -fx-padding: 10;">
-            <Label text="© 2023 Focus Monitor. All rights reserved." style="-fx-text-fill: #2c3e50;"/>
-        </HBox>
-    </bottom>
-</BorderPane>
+                <VBox spacing="14" styleClass="dashboard-card" id="accentDashboardCard" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Daily Focus" styleClass="panel-kicker" id="accentKicker"/>
+                    <Label text="Productivity snapshot" styleClass="panel-title-small" id="accentTitle"/>
+                    <Label text="This area is ready for your chart or summary widgets once the backend stats are wired in." styleClass="panel-copy-light" wrapText="true"/>
+                    <StackPane styleClass="chart-placeholder">
+                        <Label text="Chart placeholder" styleClass="chart-placeholder-text"/>
+                    </StackPane>
+                </VBox>
+            </GridPane>
+        </center>
+
+        <bottom>
+            <HBox alignment="CENTER_LEFT" styleClass="dashboard-footer">
+                <Label text="Focus Monitor desktop workspace" styleClass="footer-copy"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+</StackPane>
