@@ -80,28 +80,31 @@
 
                 <VBox spacing="14" styleClass="dashboard-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                     <Label text="Recent Activity" styleClass="panel-kicker"/>
-                    <Label text="Session timeline" styleClass="panel-title-small"/>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Session timeline" styleClass="panel-title-small"/>
+                        <Button text="Refresh" styleClass="nav-chip" onAction="#refreshTodaySummary"/>
+                    </HBox>
                     <VBox spacing="10">
                         <HBox spacing="12" styleClass="activity-row">
                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Morning planning" styleClass="activity-title"/>
-                                <Label text="Focused setup and review block" styleClass="activity-copy"/>
+                                <Label fx:id="activityTitle1" text="No sessions yet" styleClass="activity-title"/>
+                                <Label fx:id="activityCopy1" text="Start monitoring to collect today's activity." styleClass="activity-copy"/>
                             </VBox>
-                            <Label text="08:30" styleClass="activity-time"/>
+                            <Label fx:id="activityTime1" text="-" styleClass="activity-time"/>
                         </HBox>
                         <HBox spacing="12" styleClass="activity-row">
                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Deep work window" styleClass="activity-title"/>
-                                <Label text="Low interruption streak placeholder" styleClass="activity-copy"/>
+                                <Label fx:id="activityTitle2" text="No sessions yet" styleClass="activity-title"/>
+                                <Label fx:id="activityCopy2" text="The dashboard will show app windows from DB." styleClass="activity-copy"/>
                             </VBox>
-                            <Label text="10:15" styleClass="activity-time"/>
+                            <Label fx:id="activityTime2" text="-" styleClass="activity-time"/>
                         </HBox>
                         <HBox spacing="12" styleClass="activity-row">
                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Wrap-up review" styleClass="activity-title"/>
-                                <Label text="Quick summary before session end" styleClass="activity-copy"/>
+                                <Label fx:id="activityTitle3" text="No sessions yet" styleClass="activity-title"/>
+                                <Label fx:id="activityCopy3" text="Data refreshes when dashboard opens." styleClass="activity-copy"/>
                             </VBox>
-                            <Label text="13:40" styleClass="activity-time"/>
+                            <Label fx:id="activityTime3" text="-" styleClass="activity-time"/>
                         </HBox>
                     </VBox>
                 </VBox>

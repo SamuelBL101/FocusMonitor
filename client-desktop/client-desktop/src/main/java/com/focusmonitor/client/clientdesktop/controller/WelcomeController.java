@@ -17,13 +17,21 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+import java.util.concurrent.CompletionException;
 import java.util.prefs.Preferences;
 
 public class WelcomeController {
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(6);
+    private final HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(REQUEST_TIMEOUT)
+            .build();
 
     @FXML
     private ImageView logoImage;
@@ -65,6 +73,8 @@ public class WelcomeController {
         }
         loginCard.setVisible(true);
         signUpCard.setVisible(false);
+
+        log("UI initialized. Current API base URL: " + AppConfig.getBaseURL());
     }
 
     @FXML
@@ -86,10 +96,14 @@ public class WelcomeController {
         String email = signInEmail.getText();
         String password = signInPassword.getText();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            loginMessageLabel.setText("Vyplň všetky polia.");
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            loginMessageLabel.setText("Please fill in all fields.");
             return;
         }
+
+        String baseUrl = AppConfig.getBaseURL();
+        log("LOGIN started for email=" + email + ", apiBaseUrl=" + baseUrl);
+        loginMessageLabel.setText("Signing in...");
 
         String jsonBody = String.format("""
         {
@@ -98,15 +112,16 @@ public class WelcomeController {
         }
         """, email, password);
 
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(AppConfig.getBaseURL() + "/api/auth/login"))
+                .uri(URI.create(baseUrl + "/api/auth/login"))
+                .timeout(REQUEST_TIMEOUT)
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(response -> {
+                    log("LOGIN response status=" + response.statusCode());
                     if (response.statusCode() == 200) {
                         JSONObject json = new JSONObject(response.body());
                         String token = json.getString("token");
@@ -115,14 +130,18 @@ public class WelcomeController {
                         Preferences prefs = Preferences.userNodeForPackage(getClass());
                         prefs.put("jwtToken", token);
                         prefs.put("userID", userID);
+                        log("LOGIN success. userId=" + userID);
                         Platform.runLater(this::goToMainScreen);
+                    } else if (response.statusCode() == 401 || response.statusCode() == 403) {
+                        Platform.runLater(() -> loginMessageLabel.setText("Wrong email or password."));
                     } else {
-                        Platform.runLater(() -> loginMessageLabel.setText("Nesprávne používateľské meno alebo heslo."));
+                        Platform.runLater(() -> loginMessageLabel.setText("Login failed (HTTP " + response.statusCode() + ")."));
                     }
                 })
                 .exceptionally(e -> {
-                    e.printStackTrace();
-                    Platform.runLater(() -> loginMessageLabel.setText("Chyba spojenia so serverom."));
+                    String msg = mapNetworkError(e);
+                    log("LOGIN failed: " + msg);
+                    Platform.runLater(() -> loginMessageLabel.setText(msg));
                     return null;
                 });
     }
@@ -134,15 +153,19 @@ public class WelcomeController {
         String password = signUpPassword.getText();
         String confirmPassword = signUpConfirmPassword.getText();
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            signUpMessageLabel.setText("Vyplň všetky polia.");
+        if (username == null || username.isBlank() || email == null || email.isBlank()
+                || password == null || password.isBlank() || confirmPassword == null || confirmPassword.isBlank()) {
+            signUpMessageLabel.setText("Please fill in all fields.");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            signUpMessageLabel.setText("Heslá sa nezhodujú.");
+            signUpMessageLabel.setText("Passwords do not match.");
             return;
         }
+
+        String baseUrl = AppConfig.getBaseURL();
+        log("REGISTER started for email=" + email + ", apiBaseUrl=" + baseUrl);
 
         String jsonBody = String.format("""
         {
@@ -152,29 +175,49 @@ public class WelcomeController {
         }
         """, username, password, email);
 
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(AppConfig.getBaseURL() + "/api/auth/register"))
+                .uri(URI.create(baseUrl + "/api/auth/register"))
+                .timeout(REQUEST_TIMEOUT)
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(response -> {
+                    log("REGISTER response status=" + response.statusCode());
                     if (response.statusCode() == 200) {
                         Platform.runLater(() -> {
-                            signUpMessageLabel.setText("Registrácia úspešná! Môžete sa prihlásiť.");
+                            signUpMessageLabel.setText("Registration successful. You can sign in now.");
                             switchToSignIn();
                         });
                     } else {
-                        Platform.runLater(() -> signUpMessageLabel.setText("Chyba: " + response.body()));
+                        Platform.runLater(() -> signUpMessageLabel.setText("Registration failed: " + response.body()));
                     }
                 })
                 .exceptionally(e -> {
-                    e.printStackTrace();
-                    Platform.runLater(() -> signUpMessageLabel.setText("Chyba spojenia so serverom."));
+                    String msg = mapNetworkError(e);
+                    log("REGISTER failed: " + msg);
+                    Platform.runLater(() -> signUpMessageLabel.setText(msg));
                     return null;
                 });
+    }
+
+    private String mapNetworkError(Throwable throwable) {
+        Throwable root = unwrap(throwable);
+        if (root instanceof ConnectException) {
+            return "Cannot connect to backend. Check if backend is running and URL is correct.";
+        }
+        if (root instanceof HttpTimeoutException) {
+            return "Request timed out. Backend may be down or slow.";
+        }
+        return "Network error: " + root.getClass().getSimpleName();
+    }
+
+    private Throwable unwrap(Throwable throwable) {
+        if (throwable instanceof CompletionException && throwable.getCause() != null) {
+            return throwable.getCause();
+        }
+        return throwable;
     }
 
     private void goToMainScreen() {
@@ -185,7 +228,12 @@ public class WelcomeController {
             stage.setScene(new Scene(root));
             stage.setTitle("Focus Monitor - Dashboard");
         } catch (IOException e) {
+            log("Navigation error: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void log(String message) {
+        System.out.println("[FocusMonitorClient] " + message);
     }
 }
