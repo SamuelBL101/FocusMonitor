@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ActivityTracker implements Runnable {
 
     private final HomepageController homepageController;
-    private boolean running = false;
+    private volatile boolean running = false;
     private static final int MAX_PATH = 1024;
     private final ConcurrentLinkedQueue<UsageSession> queue = new ConcurrentLinkedQueue<>();
 
@@ -79,10 +79,13 @@ public class ActivityTracker implements Runnable {
                     homepageController.updateActivity(currentActivity.getAppName());
                     lastActivity = currentActivity;
                 }
-                Thread.sleep(1000);
+                // Sleep in short chunks so Stop Monitoring reacts quickly without thread interrupts.
+                for (int i = 0; i < 10 && running; i++) {
+                    Thread.sleep(100);
+                }
             } catch (InterruptedException e) {
-                System.err.println("Activity tracking interrupted: " + e.getMessage());
                 Thread.currentThread().interrupt();
+                break;
             } catch (Exception e) {
                 System.err.println("Error while tracking activity: " + e.getMessage());
 
