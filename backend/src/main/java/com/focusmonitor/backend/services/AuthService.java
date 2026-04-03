@@ -35,9 +35,9 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setTimezone("Europe/Bratislava");
         user.setCreatedAt(Instant.now());
-        userRepository.save(user);
-        String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getId().toString(), user.getEmail());
+        User savedUser = userRepository.save(user);
+        String token = jwtUtil.generateToken(savedUser.getEmail());
+        return new AuthResponse(token, savedUser.getId().toString(), savedUser.getEmail());
     }
 
     public AuthResponse login(LoginRequest request) {

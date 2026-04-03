@@ -446,3 +446,23 @@
     -fx-font-size: 12px;
     -fx-text-fill: #6f7b78;
 }
+
+.focus-day-row {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.focus-day-label {
+    -fx-text-fill: #fff3df;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.focus-day-ratio {
+    -fx-text-fill: #fff3df;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.focus-total-bar {
+    -fx-accent: #f7e0ba;
+}

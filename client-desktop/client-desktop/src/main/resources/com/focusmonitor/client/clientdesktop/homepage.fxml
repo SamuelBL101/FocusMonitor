@@ -55,8 +55,8 @@
                     <Label text="Focus Session Control" styleClass="panel-kicker"/>
                     <Label text="Start tracking the work in front of you." styleClass="panel-title" wrapText="true"/>
                     <Label text="Launch monitoring when you're ready. The desktop client will watch your active window changes and keep the backend session in sync." styleClass="panel-copy" wrapText="true"/>
-                    <Button text="Start Monitoring" styleClass="button-primary" id="heroStartButton" prefWidth="220" onAction="#startMonitor"/>
-                    <Label text="One click starts a new monitored run." styleClass="muted-copy"/>
+                    <Button fx:id="monitorToggleButton" text="Start Monitoring" styleClass="button-primary" id="heroStartButton" prefWidth="220" onAction="#toggleMonitor"/>
+                    <Label fx:id="monitorStateLabel" text="Monitoring is idle." styleClass="muted-copy"/>
                 </VBox>
 
                 <VBox spacing="14" styleClass="dashboard-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
@@ -69,7 +69,7 @@
                     <HBox spacing="12">
                         <VBox spacing="4" styleClass="mini-stat">
                             <Label text="State" styleClass="mini-stat-label"/>
-                            <Label text="Ready" styleClass="mini-stat-value"/>
+                            <Label fx:id="stateValueLabel" text="Idle" styleClass="mini-stat-value"/>
                         </VBox>
                         <VBox spacing="4" styleClass="mini-stat">
                             <Label text="Sync" styleClass="mini-stat-label"/>
@@ -80,6 +80,7 @@
 
                 <VBox spacing="14" styleClass="dashboard-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                     <Label text="Recent Activity" styleClass="panel-kicker"/>
+
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label text="Session timeline" styleClass="panel-title-small"/>
                         <Button text="Refresh" styleClass="nav-chip" onAction="#refreshTodaySummary"/>
@@ -112,9 +113,23 @@
                 <VBox spacing="14" styleClass="dashboard-card" id="accentDashboardCard" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <Label text="Daily Focus" styleClass="panel-kicker" id="accentKicker"/>
                     <Label text="Productivity snapshot" styleClass="panel-title-small" id="accentTitle"/>
-                    <Label text="This area is ready for your chart or summary widgets once the backend stats are wired in." styleClass="panel-copy-light" wrapText="true"/>
+                    <Label fx:id="dailySummaryLabel" text="Loading last 7 days..." styleClass="panel-copy-light" wrapText="true"/>
+                    <HBox spacing="14">
+                        <VBox spacing="2">
+                            <Label text="Today" styleClass="mini-stat-label"/>
+                            <Label fx:id="todayTotalLabel" text="00h 00m" styleClass="mini-stat-value"/>
+                        </VBox>
+                        <VBox spacing="2">
+                            <Label text="Productive" styleClass="mini-stat-label"/>
+                            <Label fx:id="todayProductiveLabel" text="00h 00m" styleClass="mini-stat-value"/>
+                        </VBox>
+                        <VBox spacing="2">
+                            <Label text="Ratio" styleClass="mini-stat-label"/>
+                            <Label fx:id="todayRatioLabel" text="0%" styleClass="mini-stat-value"/>
+                        </VBox>
+                    </HBox>
                     <StackPane styleClass="chart-placeholder">
-                        <Label text="Chart placeholder" styleClass="chart-placeholder-text"/>
+                        <VBox fx:id="dailyFocusBarsBox" spacing="8" prefWidth="320"/>
                     </StackPane>
                 </VBox>
             </GridPane>
