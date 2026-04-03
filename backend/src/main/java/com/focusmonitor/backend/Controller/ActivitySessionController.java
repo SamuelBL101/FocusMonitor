@@ -1,5 +1,6 @@
 package com.focusmonitor.backend.Controller;
 
+import com.focusmonitor.backend.dto.TodayAppSummaryResponse;
 import com.focusmonitor.backend.dto.StartSessionRequest;
 import com.focusmonitor.backend.model.ActivitySession;
 import com.focusmonitor.backend.repository.UserRepository;
@@ -49,5 +50,10 @@ public class ActivitySessionController {
     @GetMapping("/todaylist")
     public List<ActivitySession> getTodaySessionList() {
         return this.activitySessionService.getTodaySessions(getCurrentUserId());
+    }
+
+    @GetMapping("/today-summary")
+    public List<TodayAppSummaryResponse> getTodaySummary() {
+        return this.activitySessionService.getTodaySummary(getCurrentUserId());
     }
 }

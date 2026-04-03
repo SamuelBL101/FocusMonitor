@@ -1,5 +1,7 @@
 package com.focusmonitor.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -27,10 +29,16 @@ public class DailySummary {
     private UUID id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
+
+    @JsonProperty("userId")
+    public UUID getUserId() {
+        return user.getId();
+    }
 
     @NotNull
     @Column(name = "date", nullable = false)
@@ -49,7 +57,13 @@ public class DailySummary {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "top_app_id")
+    @JsonIgnore
     private AppDefinition topApp;
+
+    @JsonProperty("topApp")
+    public String getTopAppName() {
+        return topApp != null ? topApp.getDisplayName() : null;
+    }
 
     @NotNull
     @ColumnDefault("0")

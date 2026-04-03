@@ -1,7 +1,7 @@
 package com.focusmonitor.client.clientdesktop.modules;
 
-import com.focusmonitor.client.clientdesktop.controller.HomepageController;
 import com.focusmonitor.client.clientdesktop.communication.UsageSender;
+import com.focusmonitor.client.clientdesktop.controller.HomepageController;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
@@ -92,7 +92,6 @@ public class ActivityTracker implements Runnable {
 
     public void stopRunning() {
         this.running = false;
-        UsageSender.endSession();
     }
 
     public void sendUsageData() {
